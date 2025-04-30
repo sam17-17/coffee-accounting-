@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coffee Farm Accounting</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 10px auto; padding: 10px; background: #f4f4f4; }
+    input, select, button {
+      margin: 5px 0; padding: 12px; width: 100%; font-size: 16px; border-radius: 5px; border: 1px solid #ccc;
+    }
+    button { background-color: #2e7d32; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #1b5e20; }
+    .summary, .transaction-list {
+      background: white; padding: 15px; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .transaction { padding: 8px 0; border-bottom: 1px solid #eee; }
+    h2, h3 { text-align: center; }
+  </style>
+</head>
+<body>
+
+  <h2>☕ Coffee Farm Accounting</h2>
+
+  <form id="transactionForm">
+    <label>Type:
+      <select id="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+    </label>
+    <label>Category:
+      <input type="text" id="category" placeholder="e.g., coffee_sales, labor" required />
+    </label>
+    <label>Amount:
+      <input type="number" id="amount" required />
+    </label>
+    <label>Description:
+      <input type="text" id="description" placeholder="Optional" />
+    </label>
+    <button type="submit">Add Transaction</button>
+  </form>
+
+  <div class="summary">
+    <h3>📊 Summary</h3>
+    <p>Total Income: <span id="totalIncome">0</span></p>
+    <p>Total Expenses: <span id="totalExpenses">0</span></p>
+    <p><strong>Net Profit: <span id="netProfit">0</span></strong></p>
+  </div>
+
+  <div class="transaction-list" id="transactionList">
+    <h3>📒 Transactions</h3>
+    <!-- Transactions will appear here -->
+  </div>
+
+  <script>
+    const transactions = [];
+
+    const form = document.getElementById('transactionForm');
+    const transactionList = document.getElementById('transactionList');
+    const totalIncome = document.getElementById('totalIncome');
+    const totalExpenses = document.getElementById('totalExpenses');
+    const netProfit = document.getElementById('netProfit');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const type = document.getElementById('type').value;
+      const category = document.getElementById('category').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const description = document.getElementById('description').value;
+
+      transactions.push({ type, category, amount, description, date: new Date().toLocaleDateString() });
+      updateDisplay();
+      form.reset();
+    });
+
+    function updateDisplay() {
+      let income = 0, expenses = 0;
+      transactionList.innerHTML = '<h3>📒 Transactions</h3>';
+
+      transactions.forEach(t => {
+        if (t.type === 'income') income += t.amount;
+        else expenses += t.amount;
+
+        const entry = document.createElement('div');
+        entry.className = 'transaction';
+        entry.textContent = `${t.date} - ${t.type.toUpperCase()} - ${t.category}: ${t.amount} (${t.description})`;
+        transactionList.appendChild(entry);
+      });
+
+      totalIncome.textContent = income;
+      totalExpenses.textContent = expenses;
+      netProfit.textContent = income - expenses;
+    }
+  </script>
+
+</body>
+</html>
